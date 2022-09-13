@@ -1,4 +1,5 @@
 zahl = 16
+
 summe = 0
 list = []
 maxl = 0

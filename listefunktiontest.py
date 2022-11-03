@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 d1 = []
 d2 = []
 
-for k in range(20):
+for k in range(100):
     time1 = []
     time2 = []
-    for j in range(20):
+    for j in range(80):
+        
         liste = []
         timestart = time.time()
         for i in range(1000*j):
@@ -17,13 +18,13 @@ for k in range(20):
         #print (timeend-timestart)
         time1.append(timeend-timestart)
 
-        liste = []
-        timestart = time.time()
-        for i in range(1000*j):
-            liste.insert(0,1)
-        timeend = time.time()
+        #liste = []
+        #timestart = time.time()
+        #for i in range(1000*j):
+            #liste.insert(0,1)
+        #timeend = time.time()
         #print (timeend-timestart)
-        time2.append(timeend-timestart)
+        #time2.append(timeend-timestart)
     d1.append(time1)
     d2.append(time2)
     print(k)

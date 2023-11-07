@@ -1,0 +1,199 @@
+import time
+from threading import Thread
+#import requests
+#import grovepi
+
+#grovepi.set_ubs("RPI_1")
+
+def set_button(port):
+    grovepi.pinMode(port, "INTPUT")
+
+def check_button_port(port):
+    return grovepi.digitalRead(port)
+
+def get_data_from_api():
+    url = "https://api.polygon.io/v2/aggs/ticker/SMI/range/1/day/2023-01-09/2023-01-09?adjusted=true&sort=asc&limit=120&apiKey=HNRmV2qK0iESHmTb_ikYsresXkZAS1ph"
+    r = request.get(url)
+    data = r.json()
+    #print(data)
+    return data
+    
+class HandelFile :
+    
+    def __init__(self, name):
+        self.name = name + ".txt"
+        self.n_registers = 0;
+        
+    def write_file(self,context):
+        f = open(self.name, "w+")
+        old_context = f.read()
+        new_context = old_context + "\n" + context
+        f.write(new_context)
+        self.n_registers += 1
+        f.close()
+        
+    def get_context(self):
+        f = open(self.name, "r")
+        context = f.read()
+        f.close()
+        return context
+        
+    def get_context_line(self,n):
+        if n < 0:
+            n = self.n_registers + n
+        f = open(self.name, "r")
+        context = f.read(n)
+        f.close()
+        return context
+
+class Analyser :
+    
+    def __init__(self, data):
+        self.data = data
+        self.comp = []
+        self.usfull_data = []
+        
+    def get_components(self):
+        for i in self.data:
+            self.comp.append(i)
+            
+    def store_data(self, manager):
+        manager.write_file() 
+            
+            
+    #not modular
+    
+    def end_day_routine(self):
+        new_values = []
+        new_values.append(self.comp[5][0]["o"])
+        new_values.append(self.comp[5][0]["c"])
+        new_values.append(new_values[1]-new_values[0])
+
+class HandelProg :
+    
+    key_words = ["ITER","MAXITER"]
+    
+    def run_anyway():
+        return True
+        
+    def if_run(x,i):
+        if x%i[0] == 0:
+            return True
+        else:
+            return False
+            
+    def max_run(x,i):
+        if i[0] > i[1]:
+            i[1] += 1
+            return True
+        else:
+            return False
+            
+    util_f = [if_run, max_run]
+    
+    def __init__(self,name):
+        self.name = name
+        self.func = [] #executing functino
+        self.case = [] #case when should executetd
+        self.enum = [] #enum indentifier for case
+        self.prop = [] #properties for internal handling
+        self.run = True
+        self.runtime = 1
+    
+    def start(self):
+        print("programm is starting up")
+        self.run = True
+        
+        self.main_loop()
+        
+    def execute(self,i):
+        t = Thread(target = self.func[i], args=())
+        t.start()
+        
+    def add_func2(self,func):
+        self.func.append(func)
+        
+    def add_func(self,func, case, name, properties = []):
+        self.add_func2(func)
+        self.case.append(func)
+        self.enum.append(name)
+        self.set_properties(properties)
+        
+    def set_properties(self,prop):
+        self.prop.append([])
+        for i in prop:
+            first_n = 0
+            ii = 0
+            for j in i:
+                if j.isnumeric():
+                    first_n = ii
+                    break
+                ii += 1
+            word = i[:first_n]
+            #value = int(i[len(i)-1])
+            self.prop[-1].append([word,[int(k) for k in i[first_n:]]])
+            #self.prop[-1].append([int(k) for k in i[first_n:]])
+        #print(self.prop)
+            
+    def use_word(self,data):
+        #print(data)
+        r = True
+        for i in data:
+            #print(i)
+            j = HandelProg.key_words.index(i[0])
+            if HandelProg.util_f[j](self.runtime,i[1]):
+                pass
+            else:
+                r = False
+                break
+        return r
+        
+    def execute_prop(self,i):
+        data = self.prop[i]
+        if self.use_word(data):
+            if self.case[i]() == True:
+                self.execute(i)
+            
+    def use_properties(self):
+        ii = 0
+        for i in self.prop:
+            if i != []:
+                self.execute_prop(ii)
+            ii += 1
+        
+    def get_index_case(self,name):
+        try:
+            return self.enum.index(name)
+        except:
+            print("error name ist not in list")
+        
+    def triger_func(self, name):
+        index = self.get_index_case(name)
+        if self.case[index]() == True:
+            self.execute(index)
+        
+    #def check_case(self,name)
+    
+    def main_loop(self):
+        while self.run:
+            self.use_properties()
+            
+            print(self.runtime)
+            self.runtime += 1
+            time.sleep(0.1)
+        
+            if self.runtime >= 30:
+                break
+                    
+
+def test_f():
+    #time.sleep(1)
+    print("test")
+
+prog = HandelProg("test2")
+prog.add_func(get_data_from_api,HandelProg.run_anyway,"TEST_API")
+#prog.triger_func("TEST_API")
+#prog.add_func(test_f,HandelProg.run_anyway,"TEST_F",["ITER2","MAXITER30"])
+#prog.main_loop()
+
+              

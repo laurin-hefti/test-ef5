@@ -1,6 +1,10 @@
 import time
 from threading import Thread
-#import requests
+import requests
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from datetime import date, datetime
 #import grovepi
 
 #grovepi.set_ubs("RPI_1")
@@ -13,10 +17,12 @@ def check_button_port(port):
 
 def get_data_from_api():
     url = "https://api.polygon.io/v2/aggs/ticker/SMI/range/1/day/2023-01-09/2023-01-09?adjusted=true&sort=asc&limit=120&apiKey=HNRmV2qK0iESHmTb_ikYsresXkZAS1ph"
-    r = request.get(url)
+    r = requests.get(url)
     data = r.json()
     #print(data)
     return data
+
+#print(get_data_from_api())
     
 class HandelFile :
     
@@ -45,6 +51,78 @@ class HandelFile :
         context = f.read(n)
         f.close()
         return context
+    
+class Send_email :
+
+    def __init__(self):
+        self.my_addres = "stockanalyser@web.de"
+        self.passwort = "testemailstockapi"
+
+        self.name = "laurin.heft"
+        self.email = "laurin.hefti@icloud.com"
+        self.messageTemplate = ""
+
+        self.host = "smtp.web.de"
+        self.port = 587
+
+    def server_conection(self):
+        s = smtplib.SMTP(self.host, self.port)
+        s.starttls()
+        s.login(self.my_addres,self.passwort)
+        return s
+
+    def create_email(self, msg):
+        email = MIMEMultipart()
+
+        email["From"] = self.my_addres
+        email["To"] = self.email
+        email["Subject"] = "Daily report"
+
+        email.attach(MIMEText(msg,"plain"))
+
+        return email
+    
+    def send_email(self, msg, form):
+        s = self.server_conection()
+        msg = self.use_form(form)(msg)
+        email = self.create_email(msg)
+
+        s.send_message(email)
+        s.quit()
+
+    def form_data(self,data):
+        out_str = ""
+        out_order = ["Open:     ", 
+                     "Close:    ", 
+                     "higth:    ",
+                     "low:      ",
+                     "dif:      ",
+                     "p:        "]
+        out_str += "End day report\n"
+        day = date.today()
+        out_str += "at: " + str(day) + "\n"
+
+        for i in range(len(data)):
+            out_str += out_order[i] + str(data[i]) + "\n"
+        
+        out_str += "end"
+        
+        return out_str
+    
+    def use_form(self, name):
+        forms = [self.form_data]
+        forms_name = ["end_day"]
+
+        i = 0
+
+        if name in forms_name:
+            i = forms_name.index(name)
+        else:
+            print("error form not in list")
+
+        return forms[i]
+
+
 
 class Analyser :
     
@@ -52,22 +130,43 @@ class Analyser :
         self.data = data
         self.comp = []
         self.usfull_data = []
+
         
     def get_components(self):
         for i in self.data:
             self.comp.append(i)
             
-    def store_data(self, manager):
-        manager.write_file() 
+    def store_data(self, manager, data):
+        manager.write_file(data) 
             
             
     #not modular
     
     def end_day_routine(self):
         new_values = []
-        new_values.append(self.comp[5][0]["o"])
-        new_values.append(self.comp[5][0]["c"])
-        new_values.append(new_values[1]-new_values[0])
+        open = int(self.data["results"][0]["o"])
+        close = (self.data["results"][0]["c"])
+        higth = (self.data["results"][0]["h"])
+        low = (self.data["results"][0]["l"])
+        dif = close - open
+        p = dif / close
+
+        new_values.append(open)
+        new_values.append(close)
+        new_values.append(higth)
+        new_values.append(low)
+        new_values.append(dif)
+        new_values.append(p)
+        #print(self.data["results"][0]["v"])
+        return new_values
+
+def end_day_routine():
+    analyse = Analyser(get_data_from_api())
+    email = Send_email()
+    data = analyse.end_day_routine()
+    email.send_email(data, "end_day")
+    print("finsish")
+
 
 class HandelProg :
     
@@ -107,7 +206,7 @@ class HandelProg :
         self.main_loop()
         
     def execute(self,i):
-        t = Thread(target = self.func[i], args=())
+        t = Thread(target=self.func[i], args=())
         t.start()
         
     def add_func2(self,func):
@@ -115,7 +214,7 @@ class HandelProg :
         
     def add_func(self,func, case, name, properties = []):
         self.add_func2(func)
-        self.case.append(func)
+        self.case.append(case)
         self.enum.append(name)
         self.set_properties(properties)
         
@@ -187,11 +286,15 @@ class HandelProg :
                     
 
 def test_f():
-    #time.sleep(1)
+    time.sleep(2)
     print("test")
 
+def get_time():
+    time = datetime.now()
+    return time
+
 prog = HandelProg("test2")
-prog.add_func(get_data_from_api,HandelProg.run_anyway,"TEST_API")
+#prog.add_func(get_data_from_api,HandelProg.run_anyway,"TEST_API")
 #prog.triger_func("TEST_API")
 #prog.add_func(test_f,HandelProg.run_anyway,"TEST_F",["ITER2","MAXITER30"])
 #prog.main_loop()

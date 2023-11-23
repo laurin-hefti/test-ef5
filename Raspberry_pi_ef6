@@ -5,14 +5,15 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import date, datetime
-#import grovepi
+import grovepi
 
 #grovepi.set_ubs("RPI_1")
 
 def set_button(port):
     grovepi.pinMode(port, "INTPUT")
 
-def check_button_port(port):
+def check_button_port():
+    port = 0
     return grovepi.digitalRead(port)
 
 def get_data_from_api():
@@ -60,6 +61,7 @@ class Send_email :
 
         self.name = "laurin.heft"
         self.email = "laurin.hefti@icloud.com"
+        #self.email = "lars.hoesli2@stud.schulegl.ch"
         self.messageTemplate = ""
 
         self.host = "smtp.web.de"
@@ -167,6 +169,8 @@ def end_day_routine():
     email.send_email(data, "end_day")
     print("finsish")
 
+#end_day_routine();
+
 
 class HandelProg :
     
@@ -178,24 +182,26 @@ class HandelProg :
     def if_run(x,i):
         if x%i[0] == 0:
             return True
-        else:
-            return False
+        return False
             
     def max_run(x,i):
         if i[0] > i[1]:
             i[1] += 1
             return True
-        else:
-            return False
+        return False
+    
+    def reset_number_run(obj,name):
+        i = obj.get_index_case(name)
+        obj.prop[i][-1][1][1] = 0
             
     util_f = [if_run, max_run]
     
     def __init__(self,name):
         self.name = name
-        self.func = [] #executing functino
-        self.case = [] #case when should executetd
-        self.enum = [] #enum indentifier for case
-        self.prop = [] #properties for internal handling
+        self.func = [] #executing function, contains function to exevute
+        self.case = [] #case when should executetd, includes a function
+        self.enum = [] #enum indentifier for case, includes a string
+        self.prop = [] #properties for internal handling, indcludes string for specifying own properties
         self.run = True
         self.runtime = 1
     
@@ -209,11 +215,8 @@ class HandelProg :
         t = Thread(target=self.func[i], args=())
         t.start()
         
-    def add_func2(self,func):
-        self.func.append(func)
-        
     def add_func(self,func, case, name, properties = []):
-        self.add_func2(func)
+        self.func.append(func)
         self.case.append(case)
         self.enum.append(name)
         self.set_properties(properties)
@@ -221,31 +224,26 @@ class HandelProg :
     def set_properties(self,prop):
         self.prop.append([])
         for i in prop:
-            first_n = 0
+            first_n = 0 #first number in prop keyword, is a paramater to te keyword
             ii = 0
             for j in i:
                 if j.isnumeric():
                     first_n = ii
                     break
                 ii += 1
-            word = i[:first_n]
+            word = i[:first_n]  #contains the keyword without parameters
             #value = int(i[len(i)-1])
-            self.prop[-1].append([word,[int(k) for k in i[first_n:]]])
+            #self.prop[-1].append([word,[int(k) for k in i[first_n:]]])
+            self.prop[-1].append([word,[int(i[first_n:]),0]])
             #self.prop[-1].append([int(k) for k in i[first_n:]])
         #print(self.prop)
             
     def use_word(self,data):
-        #print(data)
-        r = True
         for i in data:
-            #print(i)
             j = HandelProg.key_words.index(i[0])
-            if HandelProg.util_f[j](self.runtime,i[1]):
-                pass
-            else:
-                r = False
-                break
-        return r
+            if not HandelProg.util_f[j](self.runtime,i[1]):
+                return False
+        return True
         
     def execute_prop(self,i):
         data = self.prop[i]
@@ -253,10 +251,10 @@ class HandelProg :
             if self.case[i]() == True:
                 self.execute(i)
             
-    def use_properties(self):
+    def use_properties(self): #cheks if properties are specified
         ii = 0
         for i in self.prop:
-            if i != []:
+            if i != [] or True:
                 self.execute_prop(ii)
             ii += 1
         
@@ -279,24 +277,47 @@ class HandelProg :
             
             print(self.runtime)
             self.runtime += 1
-            time.sleep(0.1)
+            time.sleep(1)
         
             if self.runtime >= 30:
                 break
                     
 
-def test_f():
-    time.sleep(2)
-    print("test")
-
 def get_time():
     time = datetime.now()
     return time
 
+def call_interval(t,t2):
+    time = str(get_time().time())
+    time = time[0:2]
+    if int(time) >= t and int(time) < t2:
+        return True
+    else:
+        return False
+
+def call_20():
+    return call_interval(20,21)
+
+def call_23():
+    return call_interval(23,24)
+
+def call_16():
+    return call_interval(16,17)
+
 prog = HandelProg("test2")
+
+def test_f():
+    HandelProg.reset_number_run(prog,"TEST")
+
+def reset_day_fuc():
+    HandelProg.reset_number_run(prog,"END_DAY")
+
+prog.add_func(end_day_routine,call_16, "END_DAY",["MAXITER1"])
+prog.add_func(end_day_routine, check_button_port,"BUTTON_PRESS")
+prog.add_func(reset_day_fuc,call_23,"RESET_END_DAY")
+#prog.add_func(test_f,HandelProg.run_anyway,"TEST",["MAXITER300"])
+prog.main_loop()
 #prog.add_func(get_data_from_api,HandelProg.run_anyway,"TEST_API")
 #prog.triger_func("TEST_API")
 #prog.add_func(test_f,HandelProg.run_anyway,"TEST_F",["ITER2","MAXITER30"])
-#prog.main_loop()
-
-              
+#prog.main_loop()     

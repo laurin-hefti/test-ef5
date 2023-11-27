@@ -277,10 +277,7 @@ class HandelProg :
             
             print(self.runtime)
             self.runtime += 1
-            time.sleep(1)
-        
-            if self.runtime >= 30:
-                break
+            time.sleep(10)
                     
 
 def get_time():

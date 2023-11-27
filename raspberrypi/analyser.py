@@ -1,0 +1,44 @@
+class Analyser :
+    
+    def __init__(self, data):
+        self.data = data
+        self.comp = []
+        self.usfull_data = []
+
+        
+    def get_components(self):
+        for i in self.data:
+            self.comp.append(i)
+            
+    def store_data(self, manager, data):
+        manager.write_file(data) 
+            
+            
+    #not modular
+    
+    def end_day_routine(self):
+        new_values = []
+        open = int(self.data["results"][0]["o"])
+        close = (self.data["results"][0]["c"])
+        higth = (self.data["results"][0]["h"])
+        low = (self.data["results"][0]["l"])
+        dif = close - open
+        p = dif / close
+
+        new_values.append(open)
+        new_values.append(close)
+        new_values.append(higth)
+        new_values.append(low)
+        new_values.append(dif)
+        new_values.append(p)
+        #print(self.data["results"][0]["v"])
+        return new_values
+
+def end_day_routine():
+    analyse = Analyser(get_data_from_api())
+    email = Send_email()
+    data = analyse.end_day_routine()
+    email.send_email(data, "end_day")
+    print("finsish")
+
+#end_day_routine();

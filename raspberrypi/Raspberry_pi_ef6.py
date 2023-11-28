@@ -298,8 +298,8 @@ def call_20():
 def call_23():
     return call_interval(23,24)
 
-def call_16():
-    return call_interval(16,17)
+def call_15():
+    return call_interval(15,16)
 
 prog = HandelProg("test2")
 
@@ -309,7 +309,7 @@ def test_f():
 def reset_day_fuc():
     HandelProg.reset_number_run(prog,"END_DAY")
 
-prog.add_func(end_day_routine,call_16, "END_DAY",["MAXITER1"])
+prog.add_func(end_day_routine,call_15, "END_DAY",["MAXITER1"])
 prog.add_func(end_day_routine, check_button_port,"BUTTON_PRESS")
 prog.add_func(reset_day_fuc,call_23,"RESET_END_DAY")
 #prog.add_func(test_f,HandelProg.run_anyway,"TEST",["MAXITER300"])

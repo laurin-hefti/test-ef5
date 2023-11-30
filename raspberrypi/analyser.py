@@ -34,11 +34,4 @@ class Analyser :
         #print(self.data["results"][0]["v"])
         return new_values
 
-def end_day_routine():
-    analyse = Analyser(get_data_from_api())
-    email = Send_email()
-    data = analyse.end_day_routine()
-    email.send_email(data, "end_day")
-    print("finsish")
 
-#end_day_routine();

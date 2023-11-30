@@ -1,3 +1,15 @@
+import time
+from threading import Thread
+
+#/----------------------------------------------------------------------/
+# Attention, the maxIter keyword must be the last properite to specify
+# because, the programm checks if all properties are okey, but in the
+# check fuction increments the runnummber.
+# So if its not the last properties how cheks if the action should be
+# executet, it will think it will be oke to increment and a later
+# property neglet negate this.
+#/----------------------------------------------------------------------/
+
 class HandelProg :
     
     key_words = ["ITER","MAXITER"]
@@ -12,6 +24,7 @@ class HandelProg :
             
     def max_run(x,i):
         if i[0] > i[1]:
+            print("inc")
             i[1] += 1
             return True
         return False
@@ -19,6 +32,10 @@ class HandelProg :
     def reset_number_run(obj,name):
         i = obj.get_index_case(name)
         obj.prop[i][-1][1][1] = 0
+    
+    def inc_number_run(self,name):
+        i = self.get_index_case(name)
+        self.prop[i][-1][1][1] += 1
             
     util_f = [if_run, max_run]
     
@@ -73,8 +90,8 @@ class HandelProg :
         
     def execute_prop(self,i):
         data = self.prop[i]
-        if self.use_word(data):
-            if self.case[i]() == True:
+        if self.case[i]() == True:
+            if self.use_word(data) == True:
                 self.execute(i)
             
     def use_properties(self): #cheks if properties are specified
@@ -94,8 +111,6 @@ class HandelProg :
         index = self.get_index_case(name)
         if self.case[index]() == True:
             self.execute(index)
-        
-    #def check_case(self,name)
     
     def main_loop(self):
         while self.run:

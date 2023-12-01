@@ -1,0 +1,52 @@
+class Vec :
+    def __init__(self, x,y,z):
+        self.cord = [x,y,z]
+        
+    def dotP(self, vec):
+        return self.cord[0]*vec.cord[0] + self.cord[1]*vec.cord[1] + self.cord[2]*vec.cord[2]
+            
+    def crosP(self,vec):
+        return [self.cord[1]*vec.cord[2]-self.cord[2]*vec.cord[1],
+            self.cord[2]*vec.cord[0]-self.cord[0]*vec.cord[2],
+            self.cord[0]*vec.cord[1]-self.cord[1]*vec.cord[0]]
+            
+    def addV(self,vec):
+        return [self.cord[0]+vec.cord[0],self.cord[1]+vec.cord[1],self.cord[2]+vec.cord[2]]
+    
+    def subV(self,vec):
+        return [self.cord[0]-vec.cord[0],self.cord[1]-vec.cord[1],self.cord[2]-vec.cord[2]]
+    
+    def getLen(self):
+        return (self.cord[0]**2+self.cord[1]**2+self.cord[2]**2)**0.5
+        
+    def norm(self):
+        l = self.getLen()
+        self.cord = [self.cord[0]/l,self.cord[1]/l, self.cord[2]/l]
+        
+    def mult(self,a):
+        return [self.cord[0]*a, self.cord[1]*a, self.cord[2]*a]
+
+class Line :
+    def __init__(self, x,y,z, a,b,c):
+        self.v = Vec(a,b,c)
+        self.g = Vec(x,y,z)
+    
+    def getValue(self,t):
+        return self.v.addV(self.g.mult(t))
+
+class Camera :
+    def __init__(self,x,y,z,a,b,c):
+        self.pos = Vec(x,y,z)
+        self.dir = Vec(a,b,c)
+        
+    def getRay(x,y,z): #screencord
+        screen = Vec(x,y,z)
+        return screen.subV(self.pos)
+        
+class Sphere :
+    def __init__(self,x,y,z,r):
+        self.pos = Vec(x,y,z)
+        self.r = r
+        
+obj = []
+ 

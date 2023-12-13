@@ -1,5 +1,7 @@
 import import_file
 
+# raspberrypi function not in use
+
 #grovepi.set_ubs("RPI_1")
 
 def set_button(port):

@@ -1,3 +1,6 @@
+
+# Analyser Calss, it analyses the receaved data, most of the code is not used
+
 class Analyser :
     
     def __init__(self, data):
@@ -17,21 +20,23 @@ class Analyser :
     #not modular
     
     def end_day_routine(self):
-        new_values = []
-        open = int(self.data["results"][0]["o"])
-        close = (self.data["results"][0]["c"])
-        higth = (self.data["results"][0]["h"])
-        low = (self.data["results"][0]["l"])
-        dif = close - open
-        p = dif / close
+        try:
+            new_values = []
+            open = int(self.data["results"][0]["o"])
+            close = (self.data["results"][0]["c"])
+            higth = (self.data["results"][0]["h"])
+            low = (self.data["results"][0]["l"])
+            dif = close - open
+            p = dif / close
 
-        new_values.append(open)
-        new_values.append(close)
-        new_values.append(higth)
-        new_values.append(low)
-        new_values.append(dif)
-        new_values.append(p)
-        #print(self.data["results"][0]["v"])
-        return new_values
+            new_values.append(open)
+            new_values.append(close)
+            new_values.append(higth)
+            new_values.append(low)
+            new_values.append(dif)
+            new_values.append(p)
+            return new_values
+        except:
+            return False
 
 

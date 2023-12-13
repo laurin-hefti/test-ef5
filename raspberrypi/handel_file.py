@@ -1,3 +1,6 @@
+
+# Handelfile calss, can handel files easily but it not used
+
 class HandelFile :
     
     def __init__(self, name):

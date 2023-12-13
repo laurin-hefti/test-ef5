@@ -1,9 +1,9 @@
+# api Handler, sends the request to the api and receaved the data
+
 import requests
 
-def get_data_from_api(datum):
-    url = "https://api.polygon.io/v2/aggs/ticker/SMI/range/1/day/"+datum+"/"+datum+"?adjusted=true&sort=asc&limit=120&apiKey=HNRmV2qK0iESHmTb_ikYsresXkZAS1ph"
-    print(url)
+def get_data_from_api(datum, stock):
+    url = "https://api.polygon.io/v2/aggs/ticker/"+stock+"/range/1/day/"+datum+"/"+datum+"?adjusted=true&sort=asc&limit=5000&apiKey=HNRmV2qK0iESHmTb_ikYsresXkZAS1ph"
     r = requests.get(url)
     data = r.json()
-    print(data)
     return data

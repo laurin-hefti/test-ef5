@@ -1,0 +1,51 @@
+
+############################################################################################################
+############################################## Stockanalyser ###############################################
+############################################################################################################
+
+################################################# Manual ###################################################
+
+Stockanlyser is an Application for just getting Information daily about a spesific Stock.
+
+The Program has to run somewehre, doesent matter who, the only reqirement is, that it needs acces to 
+internet. Once the programm is running, no changes in the programm are needed.
+
+Wath is the Programm doeing?
+The program sends you daily an email with Information about the Stock you can choose. The Informations are:
+open, close, higth, low, dif and p. The first four Infromation, are stait forward, the dif ist the
+difference between the start and the end of the day. The p stands for percentage and shows how much the 
+Value have changet, with respect to the Total Value. In other words the persentage of change but decimal 
+values. So 0% is 0 and 100% is 1. The timerange is one day and the Values are from the day bevore. This
+is because, to have acces on current Infromation about the Stock, you need the premium version, how is
+not free.
+
+How can I modify the Program?
+If you want to make any changes on the Program, you can do this with sending an email back to the
+stockanalyser. The emailadress is: stockanlyser2@web.de. 
+The mail as to follow some rules. If you want to change something, you have to write a "execute:",
+note is must be lower case, and then write wath you want to change.
+There are three differen things you can change.
+First ist not realy a change. If you want to have now the information you can wirte:
+"execute: send".
+In the next minutes it will send the Infromation, not immediately. This is because, it has to interact
+with the mail server and it will probably block the program, if it asks all 10 sekonds if someting arrived.
+The seccond changing is, wenn you want to change the stock, default is SMI.
+This can be done with "execute: stock". As the stock word you fill in the stock name. If the stock name
+is not correct, the programm will send you a missleading message by the next letter you get. Something like
+the stock is currently on the weekend. This is the samme message you get, wenn the stock is realy in the 
+weekend.
+My you are not the ony one how wants to get the Information about the stock. You can easily add other
+emailaddresses on wicht a mail should be sended. This is easily done by writing: "execute: name@name.ch".
+Note if you no longer wanth to recieve emails, you can add a - sing bevore your email address and send
+it to the server.
+
+
+If no longer emails are comming, then something went wrong with the programm. It should be resistent cause the
+individual processes are paralellised with multythreading, so if something went wrong, the main program
+should be continnuing. It could be thath the mail server is blockt, cause he thinks the programm is a violent
+acces and it prohibit the acces on the mailserver. But thes problems are for the administrator.
+
+We use the polygon.oi api for the information and the web.de mailserver for the mails.
+
+
+ 

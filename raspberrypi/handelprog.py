@@ -1,6 +1,16 @@
 import time
 from threading import Thread
 
+# --------------------------- Handelprog Class -------------------------
+
+# this class handels all subprogramms. It uses multithreading for
+# executing different subfunctions.
+
+# you can add a function to the programm. The prgramm will periodicly
+# execute the subprogramm.
+# Input: handelprog.add_func(name_of_func, own_condition_function, name_for_function, (optional) parameters")
+# parameters: MAXITERX, X maximal number of executing, ITERX, X after X iterations it will be executed
+
 #/----------------------------------------------------------------------/
 # Attention, the maxIter keyword must be the last properite to specify
 # because, the programm checks if all properties are okey, but in the
@@ -11,7 +21,7 @@ from threading import Thread
 #/----------------------------------------------------------------------/
 
 class HandelProg :
-    
+
     key_words = ["ITER","MAXITER"]
     
     def run_anyway():
@@ -75,11 +85,7 @@ class HandelProg :
                     break
                 ii += 1
             word = i[:first_n]  #contains the keyword without parameters
-            #value = int(i[len(i)-1])
-            #self.prop[-1].append([word,[int(k) for k in i[first_n:]]])
             self.prop[-1].append([word,[int(i[first_n:]),0]])
-            #self.prop[-1].append([int(k) for k in i[first_n:]])
-        #print(self.prop)
             
     def use_word(self,data):
         for i in data:

@@ -31,6 +31,11 @@ void createNewString(String* s){
     s->maxlen *= 2;
 }
 
+void nullString(String* s){
+    s->s[len] = "1"; //not 0
+    s->len = 0;
+}
+
 void addString(String* s, String* s2){
     if (testIfStringFull(s, s2->len)){
         createNewString(s);
@@ -101,7 +106,7 @@ int* getIndexListofChar(String* s, char c){
     return list;
 }
 
-String* splitString(String* s, int i){
+String** splitString(String* s, int i){
     String* s1 = malloc(i*sizeof(char));
     String* s2 = malloc((s->len - i)* sizeof(char));
     String** list = malloc(2*sizeof(String*));
@@ -113,8 +118,15 @@ String* splitString(String* s, int i){
     return list;
 }
 
- insertChar(String* s, char c){
+String* getinsertChar(String* s, char* c, int len, int i){
+    String** list = splitString(s, i);
+    addChar(list[0], c, len);
+    addString(list[0], list[1]);
+    //memory
+    delete list[1];
+    delete s;
     
+    return list[0];
 }
 
 int main() {

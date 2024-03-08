@@ -32,7 +32,7 @@ void createNewString(String* s){
 }
 
 void nullString(String* s){
-    s->s[len] = "1"; //not 0
+    //s->s[s->len] = "11"; //not 0
     s->len = 0;
 }
 
@@ -123,8 +123,8 @@ String* getinsertChar(String* s, char* c, int len, int i){
     addChar(list[0], c, len);
     addString(list[0], list[1]);
     //memory
-    delete list[1];
-    delete s;
+    free(list[1]);
+    free(s);
     
     return list[0];
 }
@@ -135,6 +135,9 @@ int main() {
     char* news2 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     addChar(s, news, 3);
     addChar(s, news2, 40);
-    printString(s);
+    char* news3 = "1";
+    //String** list = splitString(s, 4);
+    //String* s2 = getinsertChar(s, news3, 1, 5);
+    //printString(s2);
     return 0;
 }

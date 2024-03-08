@@ -46,7 +46,17 @@ void addChar(String* s, char* s2, int len){
 }
 
 void addStringwithOffset(String* s, String* s2, int len, int offset){
-    strncat(s->s, s2-s[offset], len);
+    if (testIfStringFull(s, len)){
+        createNewString(s);
+    }
+    strncat(s->s, &s2->s[offset], len);
+}
+
+void addCharwithOffset(String* s, char* c, int len, int offset){
+    if (testIfStringFull(s, len)){
+        createNewString(s);
+    }
+    strncat(s->s, &c[offset], len);
 }
 
 void printString(String* s){
@@ -93,11 +103,14 @@ int* getIndexListofChar(String* s, char c){
 
 String* splitString(String* s, int i){
     String* s1 = malloc(i*sizeof(char));
-    String* s2 = malloc((s-len - i)* sizeof(char));
-    String* list = malloc(2*sizeof(String*));
+    String* s2 = malloc((s->len - i)* sizeof(char));
+    String** list = malloc(2*sizeof(String*));
     
-    addString(s1, s->s, s->len-i);
-    //addStringwithOffset(s2, s->[])
+    addChar(s1, s->s, s->len-i);
+    addCharwithOffset(s2, s->s, s->len-i, i);
+    list[0] = s1;
+    list[1] = s2;
+    return list;
 }
 
  insertChar(String* s, char c){
@@ -107,9 +120,9 @@ String* splitString(String* s, int i){
 int main() {
     String* s = initString();
     char* news = "abc";
-    char* news2 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    char* news2 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     addChar(s, news, 3);
-    addChar(s, news2, 30);
+    addChar(s, news2, 40);
     printString(s);
     return 0;
 }

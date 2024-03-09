@@ -83,18 +83,18 @@ void printString(String* s){
     printf(s->s);
 }
 
-int getIndexOfCharstart(String* s,char c){ //wierd name
+int getIndexOfCharstart(String* s,char* c){ //wierd name
     for (int i = 0; i < s->len; i++){
-        if (s->s[i] == c){
+        if (s->s[i] == *c){
             return i;
         }
     }
     return -1;
 }
 
-int getIndexOfChar(String* s, char c, int offset){
+int getIndexOfChar(String* s, char* c, int offset){
     for (int i = offset; i < s->len; i++){
-        if (s->s[i] == c){
+        if (s->s[i] == *c){
             return i;
         }
     }
@@ -119,14 +119,18 @@ int getIndexofCharSeq(String* s, char* c, int len){
     return -1;
 }
 
-int* getIndexListofChar(String* s, char c){
-    //first element is the len of the list
+int* getIndexListofChar(String* s, char* c){
+    //first element is the len of the listed
     int res = 0;
     int num = 0;
     while(res != -1){
-        res = getIndexOfChar(s, c, res);
+        res = getIndexOfChar(s, c, res); //not good while loop
+        if (res == -1){
+            break;
+        }
         if (res != -1){
             num += 1;
+            res += 1;
         }
     }
     int* list = malloc((num+1)*sizeof(int));
@@ -134,7 +138,7 @@ int* getIndexListofChar(String* s, char c){
     res = 0;
     for (int i = 0; i < num; i++){
         list[i+1] = getIndexOfChar(s, c, res);
-        res = list[i+1];
+        res = list[i+1]+1; // notlösung
     }
     return list;
 }
@@ -214,9 +218,12 @@ int main() {
     char* control = "()";
 
     String* s = initString();
-    addChar(s, "2+sqrt(5)+1", 11);  // -> (2+(3*2)
+    addChar(s, "2+sqrt(5)+2", 11);  // -> (2+(3*2)
     s = formatToMathInput(s);
-    printString(s);
+    //printString(s);
+    char* charr = "2";
+    int* ii = getIndexListofChar(s, charr);
+    printf("%d", ii[2]);
     
     return 0;
 }

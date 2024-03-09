@@ -41,6 +41,15 @@ void addString(String* s, String* s2){
         createNewString(s);
     }
     strncat(s->s, s2->s, s2->len);
+    s->len += s2->len;
+}
+
+void addStringLen(String* s, String* s2, int len){
+    if (testIfStringFull(s, len)){
+        createNewString(s);
+    }
+    strncat(s->s, s2->s, len);
+    s->len += len;
 }
 
 void addChar(String* s, char* s2, int len){
@@ -48,6 +57,7 @@ void addChar(String* s, char* s2, int len){
         createNewString(s);
     }
     strncat(s->s, s2, len);
+    s->len += len;
 }
 
 void addStringwithOffset(String* s, String* s2, int len, int offset){
@@ -55,6 +65,7 @@ void addStringwithOffset(String* s, String* s2, int len, int offset){
         createNewString(s);
     }
     strncat(s->s, &s2->s[offset], len);
+    s->len += len;
 }
 
 void addCharwithOffset(String* s, char* c, int len, int offset){
@@ -62,6 +73,7 @@ void addCharwithOffset(String* s, char* c, int len, int offset){
         createNewString(s);
     }
     strncat(s->s, &c[offset], len);
+    s->len += len;
 }
 
 void printString(String* s){
@@ -107,12 +119,12 @@ int* getIndexListofChar(String* s, char c){
 }
 
 String** splitString(String* s, int i){
-    String* s1 = malloc(i*sizeof(char));
-    String* s2 = malloc((s->len - i)* sizeof(char));
+    String* s1 = initString();
+    String* s2 = initString();
     String** list = malloc(2*sizeof(String*));
     
-    addChar(s1, s->s, s->len-i);
-    addCharwithOffset(s2, s->s, s->len-i, i);
+    addStringLen(s1, s, i);
+    addStringwithOffset(s2, s, s->len-i, i);
     list[0] = s1;
     list[1] = s2;
     return list;
@@ -134,10 +146,10 @@ int main() {
     char* news = "abc";
     char* news2 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     addChar(s, news, 3);
-    addChar(s, news2, 40);
+    addChar(s, news2, 30);
     char* news3 = "1";
     //String** list = splitString(s, 4);
-    //String* s2 = getinsertChar(s, news3, 1, 5);
-    //printString(s2);
+    String* s2 = getinsertChar(s, news3, 1, 5);
+    printString(s2);
     return 0;
 }

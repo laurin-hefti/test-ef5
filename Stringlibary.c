@@ -32,7 +32,7 @@ void createNewString(String* s){
 }
 
 void nullString(String* s){
-    //s->s[s->len] = "11"; //not 0
+    s->s[0] = "\0";
     s->len = 0;
 }
 

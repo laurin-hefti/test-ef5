@@ -160,6 +160,9 @@ String* getinsertChar(String* s, char* c, int len, int i){
     return list[0];
 }
 
+//imporvements
+//realoc
+//strncmp
 int main() {
     String* s = initString();
     String* s2 = initString();

@@ -149,11 +149,35 @@ String** splitString(String* s, int i){
     return list;
 }
 
+String** splitStringOffset(String* s, int i, int gap){
+    String* s1 = initString();
+    String* s2 = initString();
+    String** list = malloc(2*sizeof(String*));
+    
+    addStringLen(s1, s, i);
+    addStringwithOffset(s2, s, s->len-i+gap, i);
+    list[0] = s1;
+    list[1] = s2;
+    return list;
+}
+
 String* getinsertChar(String* s, char* c, int len, int i){
     String** list = splitString(s, i);
     addChar(list[0], c, len);
     addString(list[0], list[1]);
     //memory
+    free(list[1]);
+    free(s);
+    
+    return list[0];
+}
+
+String getreplaceChar(String* s, char* oldc, int lenold, char* charnew, char* lennew){
+    int i = getIndexofCharSeq(s, oldc, lenold);
+    String** list = splitStringOffset(s, i, lenold);
+    addChar(list[0], charnew, lennew);
+    addChar(list[0], list[1]);
+    
     free(list[1]);
     free(s);
     

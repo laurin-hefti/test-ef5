@@ -1,4 +1,3 @@
-// Online C compiler to run C program online
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +16,10 @@ String* initString(){
     return newstr;
 }
 
+int lenChar(char* c){
+    return strlen(c);
+}
+
 int testIfStringFull(String* s, int size){
     if (s->maxlen < s->len + size){
         return 1;
@@ -32,7 +35,7 @@ void createNewString(String* s){
 }
 
 void nullString(String* s){
-    s->s[0] = "\0";
+    s->s[0] = '\0';
     s->len = 0;
 }
 
@@ -100,7 +103,6 @@ int getIndexOfChar(String* s, char c, int offset){
 
 int cmpCharSeq(String* s, int offset, char* c, int len){
     int r = memcmp(&s->s[offset], c, len);
-    printf("%d\n",r);
     if (r == 0){
         return 1;
     } else{
@@ -155,7 +157,7 @@ String** splitStringOffset(String* s, int i, int gap){
     String** list = malloc(2*sizeof(String*));
     
     addStringLen(s1, s, i);
-    addStringwithOffset(s2, s, s->len-i+gap, i);
+    addStringwithOffset(s2, s, s->len-i, i+gap);
     list[0] = s1;
     list[1] = s2;
     return list;
@@ -172,11 +174,11 @@ String* getinsertChar(String* s, char* c, int len, int i){
     return list[0];
 }
 
-String getreplaceChar(String* s, char* oldc, int lenold, char* charnew, char* lennew){
+String* getreplaceChar(String* s, char* oldc, int lenold, char* charnew, int lennew){
     int i = getIndexofCharSeq(s, oldc, lenold);
     String** list = splitStringOffset(s, i, lenold);
     addChar(list[0], charnew, lennew);
-    addChar(list[0], list[1]);
+    addString(list[0], list[1]);
     
     free(list[1]);
     free(s);
@@ -184,18 +186,7 @@ String getreplaceChar(String* s, char* oldc, int lenold, char* charnew, char* le
     return list[0];
 }
 
-//imporvements
+//improvements
 //realoc
+//strlen
 //strncmp
-int main() {
-    String* s = initString();
-    String* s2 = initString();
-    char* news = "ababcd";
-    char* news2 = "abc";
-    addChar(s, news, 5);
-    addChar(s2, news2, 3);
-    //int r = cmpCharSeq(s,0, news2, 3);
-    int r = getIndexofCharSeq(s,news2, 3);
-    printf("%d", r);
-    return 0;
-}

@@ -211,6 +211,10 @@ String* formatToMathInput(String* s){
     return s;
 }
 
+String* applyControl(String* s){
+    
+}
+
 int main() {
     char* pointo = "*/";
     char* lineo = "+-";

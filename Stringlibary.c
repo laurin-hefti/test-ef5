@@ -80,7 +80,7 @@ void printString(String* s){
     printf(s->s);
 }
 
-int getIndxOfChar(String* s,char c){
+int getIndexOfCharstart(String* s,char c){ //wierd name
     for (int i = 0; i < s->len; i++){
         if (s->s[i] == c){
             return i;
@@ -89,9 +89,28 @@ int getIndxOfChar(String* s,char c){
     return -1;
 }
 
-int getIndexOfChar(String* s, char c, int index){
-    for (int i = index; i < s->len; i++){
+int getIndexOfChar(String* s, char c, int offset){
+    for (int i = offset; i < s->len; i++){
         if (s->s[i] == c){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int cmpCharSeq(String* s, int offset, char* c, int len){
+    int r = memcmp(&s->s[offset], c, len);
+    printf("%d\n",r);
+    if (r == 0){
+        return 1;
+    } else{
+        return 0;
+    }
+}
+
+int getIndexofCharSeq(String* s, char* c, int len){
+    for (int i = 0; i < s->len; i++){
+        if (cmpCharSeq(s,i,c,len)){
             return i;
         }
     }
@@ -143,13 +162,13 @@ String* getinsertChar(String* s, char* c, int len, int i){
 
 int main() {
     String* s = initString();
-    char* news = "abc";
-    char* news2 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    addChar(s, news, 3);
-    addChar(s, news2, 30);
-    char* news3 = "1";
-    //String** list = splitString(s, 4);
-    String* s2 = getinsertChar(s, news3, 1, 5);
-    printString(s2);
+    String* s2 = initString();
+    char* news = "ababcd";
+    char* news2 = "abc";
+    addChar(s, news, 5);
+    addChar(s2, news2, 3);
+    //int r = cmpCharSeq(s,0, news2, 3);
+    int r = getIndexofCharSeq(s,news2, 3);
+    printf("%d", r);
     return 0;
 }

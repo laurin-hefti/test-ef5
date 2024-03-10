@@ -211,8 +211,45 @@ String* formatToMathInput(String* s){
     return s;
 }
 
-String* applyControl(String* s){
+char* pointo;
+char* lineo;
+char* powero;
+char* control;
+
+int searchNearestIndexDown(int** list, int len, int index){
+    int nearestIndex = 0;
+    int diverenz = index;
+    int listindex = -1;
+    for (int i = 0; i < len; i++){
+        for (int j = 0; j < list[i][0]; j++){
+            if (abs(list[i][j]- index) < diverenz &&
+                list[i][j] != index && list[i][j] < index){
+                    nearestIndex = list[i][j];
+                    diverenz = abs(list[i][j] - index);
+                    listindex = i;
+                }
+        }
+    }
+    return (int[]){nearestIndex, listindex};
+    //ist int* und int[] in c und cpp das gleiche?
     
+}
+//statemachine reaplace
+
+String* applyControl(String* s){
+    int* popp = getIndexListofChar(s, pointo[0]);
+    int* popm = getIndexListofChar(s, pointo[1]);
+    int* lopm = getIndexListofChar(s, lineo[0]);
+    int* lopd = getIndexListofChar(s, lineo[1]);
+    int* powopp = getIndexListofChar(s, powero[0]);
+    int* powops = getIndexListofChar(s, powero[1]);
+    int* cono = getIndexListofChar(s, control[0]);
+    int* conc = getIndexListofChar(s, control[1]);
+    
+    int** list = {popp, popm, lopm, lopd, powopp, powops, cono, conc};
+    int len = 8;
+    
+    int[] r = searchNearestIndexDown(list, len, 5); 
 }
 
 int main() {
@@ -225,9 +262,9 @@ int main() {
     addChar(s, "2+sqrt(5)+2", 11);  // -> (2+(3*2)
     s = formatToMathInput(s);
     //printString(s);
-    char* charr = "2";
+    char* charr = "8";
     int* ii = getIndexListofChar(s, charr);
-    printf("%d", ii[2]);
+    printf("%d", ii[0]);
     
     return 0;
 }

@@ -211,21 +211,27 @@ String* formatToMathInput(String* s){
     return s;
 }
 
-char* pointo;
-char* lineo;
-char* powero;
-char* control;
+char* mul;
+char* div_;
+char* add;
+char* sub;
+char* pow_;
+char* root;
+char* startc;
+char* endc;
 
-int searchNearestIndexDown(int** list, int len, int index){
+int* searchNearestIndexDown(int** list, int len, int index, int lenstring){
     int nearestIndex = 0;
-    int diverenz = index;
+    int diverenz = lenstring;
     int listindex = -1;
     for (int i = 0; i < len; i++){
-        for (int j = 0; j < list[i][0]; j++){
-            if (abs(list[i][j]- index) < diverenz &&
+        for (int j = 1; j < list[i][0]; j++){
+            if (abs(list[i][j] - index) < diverenz &&
                 list[i][j] != index && list[i][j] < index){
+                    printf("a:%d ",  diverenz);
                     nearestIndex = list[i][j];
                     diverenz = abs(list[i][j] - index);
+                    printf("b: %d ", diverenz);
                     listindex = i;
                 }
         }
@@ -236,35 +242,55 @@ int searchNearestIndexDown(int** list, int len, int index){
 }
 //statemachine reaplace
 
+//testing fuction
+void printList(int* list){
+    //fisrt element len of list
+    printf("list: ");
+    for (int i = 1; i < list[0]; i++){
+        printf("%d ", list[i]);
+    }
+}
+
 String* applyControl(String* s){
-    int* popp = getIndexListofChar(s, pointo[0]);
-    int* popm = getIndexListofChar(s, pointo[1]);
-    int* lopm = getIndexListofChar(s, lineo[0]);
-    int* lopd = getIndexListofChar(s, lineo[1]);
-    int* powopp = getIndexListofChar(s, powero[0]);
-    int* powops = getIndexListofChar(s, powero[1]);
-    int* cono = getIndexListofChar(s, control[0]);
-    int* conc = getIndexListofChar(s, control[1]);
+    int* popp = getIndexListofChar(s, mul);
+    int* popm = getIndexListofChar(s, div_);
+    int* lopm = getIndexListofChar(s, add);
+    int* lopd = getIndexListofChar(s, sub);
+    int* powopp = getIndexListofChar(s, pow_);
+    int* powops = getIndexListofChar(s, root);
+    int* cono = getIndexListofChar(s, endc);
+    int* conc = getIndexListofChar(s, startc);
     
-    int** list = {popp, popm, lopm, lopd, powopp, powops, cono, conc};
+    int* list[] = {popp, popm, lopm, lopd, powopp, powops, cono, conc};
     int len = 8;
-    
-    int[] r = searchNearestIndexDown(list, len, 5); 
+    printList(lopm);
+    int* r = searchNearestIndexDown(list, len, 17, s->len); 
+    printf("%d ",r[0]);
+    printf("%d ", r[1]);
+    return s;
 }
 
 int main() {
-    char* pointo = "*/";
-    char* lineo = "+-";
-    char* powero = "^&"; 
-    char* control = "()";
+    mul = "*";
+    div_ = "/";
+    add = "+";
+    sub = "-";
+    pow_ = "^";
+    root = "^";
+    endc = ")";
+    startc = "(";
 
     String* s = initString();
-    addChar(s, "2+sqrt(5)+2", 11);  // -> (2+(3*2)
-    s = formatToMathInput(s);
+    char* testc = "+222+35kalsdl*2ladjk";
+    //printf("%d ", lenChar(testc));
+    addChar(s, testc, lenChar(testc));  // -> (2+(3*2)
+    //s = formatToMathInput(s);
     //printString(s);
-    char* charr = "8";
-    int* ii = getIndexListofChar(s, charr);
-    printf("%d", ii[0]);
+    //char* charr = "8";
+    //int* ii = getIndexListofChar(s, charr);
+    //printf("%d", ii[0]);
+    
+    applyControl(s);
     
     return 0;
 }

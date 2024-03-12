@@ -243,7 +243,29 @@ int* searchNearestIndexDown(int** list, int len, int index, int lenstring){
     res[1] = listindex;
     return res;
     //ist int* und int[] in c und cpp das gleiche?
-    
+}
+
+int* searchNearestIndexUp(int** list, int len, int index, int lenstring){
+    int nearestIndex = 0;
+    int diverenz = lenstring;
+    int listindex = -1;
+    for (int i = 0; i < len; i++){
+        for (int j = 1; j <= list[i][0]; j++){
+            if (abs(list[i][j] - index) < diverenz &&
+                list[i][j] != index && list[i][j] > index){
+                    //printf("a:%d ",  diverenz);
+                    nearestIndex = list[i][j];
+                    diverenz = abs(list[i][j] - index);
+                    //printf("b: %d ", diverenz);
+                    listindex = i;
+                }
+        }
+    }
+    int* res = (int*)malloc(sizeof(int)*2);
+    res[0] = nearestIndex;
+    res[1] = listindex;
+    return res;
+    //ist int* und int[] in c und cpp das gleiche?
 }
 //statemachine reaplace
 
@@ -257,24 +279,84 @@ void printList(int* list){
 }
 
 String* applyControl(String* s){
-    int* popp = getIndexListofChar(s, mul);
-    int* popm = getIndexListofChar(s, div_);
-    int* lopm = getIndexListofChar(s, add);
-    int* lopd = getIndexListofChar(s, sub);
-    int* powopp = getIndexListofChar(s, pow_);
-    int* powops = getIndexListofChar(s, root);
-    int* cono = getIndexListofChar(s, endc);
-    int* conc = getIndexListofChar(s, startc);
+    int len = 5; // cono and conc must not be evaluated
+    int len2 = 7;
+    //idea not all will be evaluated but position will be
+    //int* c = searchNearestIndexUp(list, len, 5, s->len);
+    //printf("%d ", c[0]);
+    //printf("%d ", c[1]);
     
-    int* list[] = {popp, popm, lopm, lopd, powopp, powops, cono, conc};
-    int len = 8;
-    //returns a list with two elements, the first one
-    //has the index of the operator and the second one
-    //from the list
-    int* r = searchNearestIndexDown(list, len, 18, s->len); 
-    //printf("%d ",r[0]);
-    //printf("%d ", r[1]);
-
+    //return s;
+    for (int i = 0; i < len; i++){
+        
+        int* popm = getIndexListofChar(s, mul);
+        int* popd = getIndexListofChar(s, div_);
+        int* lopa = getIndexListofChar(s, add);
+        int* lops = getIndexListofChar(s, sub);
+        int* powopp = getIndexListofChar(s, pow_);
+        int* powops = getIndexListofChar(s, root);
+        //exeption
+        int* cono = getIndexListofChar(s, endc); //not used
+        int* conc = getIndexListofChar(s, startc);//not used
+    
+        int* list[] = {powopp, popm, popd, lopa, lops, cono, conc}; // may alsow root
+    
+        for (int j = 1; j <= list[i][0]; j++){
+         int* downChar = searchNearestIndexDown(list, len2, list[i][j], s->len);
+         int* upChar = searchNearestIndexUp(list, len2, list[i][j], s->len);
+         
+         if (downChar[0] == 0){
+             s = getinsertChar(s,startc,1,0);
+         }else if (downChar[1] == 5){
+             //for case when )<- happend then search corresponding ( or go to end
+             int hav_end = 0;
+             int end = 0;
+             for (int k = 1; k <= list[6][0]; k++){
+                 //must be list 6
+                 if (list[6][k] < downChar[0]){
+                     hav_end = 1;
+                     end = list[6][k];
+                     break;
+                     
+                 }
+            if (hav_end){
+             s = getinsertChar(s, startc, 1, end-1);//my plus one
+            }else{
+                s = getinsertChar(s, startc, 1, 0);
+                 }
+             }
+            //jump to other end of list
+         } else if (downChar[1] == 6){
+             s = getinsertChar(s, startc,1, *downChar); //my not realy useful
+         }else{
+            s = getinsertChar(s, startc, 1, *downChar+1);
+         }
+         
+         if(upChar[0] == 0){
+            addChar(s, endc, 1);
+         }else if (upChar[1] == 5){
+             s = getinsertChar(s, endc, 1, *upChar+1);
+         }else if (upChar[1] == 6){
+             int have_end = 0;
+             int end = 0;
+             for (int k = 1; k <= list[5][0]; k++){
+                 if (list[5][k] > upChar[0]){
+                     have_end = 1;
+                     end = list[5][k];
+                     break;
+                 }
+             }
+             if (have_end){
+                 s = getinsertChar(s, endc, 1, end+1);
+             }else{
+                 addChar(s, endc, 1);
+             }
+         }else {
+            s = getinsertChar(s, endc, 1, *upChar+2);
+         }
+        }
+    }
+    
     return s;
 }
 
@@ -289,16 +371,19 @@ int main() {
     startc = (char*)"(";
 
     String* s = initString();
-    char* testc = "+222+35kalsdl*2ladjk";
+    char* testc = "22b+dab*5b5+2";
+    addChar(s, testc, lenChar(testc));
+    s = applyControl(s);
+    printString(s);
     //printf("%d ", lenChar(testc));
-    addChar(s, testc, lenChar(testc));  // -> (2+(3*2)
+    //addChar(s, testc, lenChar(testc));  // -> (2+(3*2)
     //s = formatToMathInput(s);
     //printString(s);
     //char* charr = "8";
     //int* ii = getIndexListofChar(s, charr);
     //printf("%d", ii[0]);
     
-    applyControl(s);
+    //applyControl(s);
     
     return 0;
 }

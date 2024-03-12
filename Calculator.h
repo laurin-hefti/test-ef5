@@ -9,8 +9,8 @@ typedef struct{
 } String;
 
 String* initString(){
-    String* newstr = malloc(sizeof(String));
-    newstr->s = malloc(20*sizeof(char));
+    String* newstr = (String*) malloc(sizeof(String));
+    newstr->s = (char*) malloc(20*sizeof(char));
     newstr->len = 0;
     newstr->maxlen = 20;
     return newstr;
@@ -29,7 +29,7 @@ int testIfStringFull(String* s, int size){
 }
 
 void createNewString(String* s){
-    char* newCharpointer = malloc(s->maxlen*2);
+    char* newCharpointer = (char*) malloc(s->maxlen*2);
     s->s = strcpy(newCharpointer, s->s);
     s->maxlen *= 2;
 }
@@ -133,7 +133,7 @@ int* getIndexListofChar(String* s, char* c){
             res += 1;
         }
     }
-    int* list = malloc((num+1)*sizeof(int));
+    int* list = (int*) malloc((num+1)*sizeof(int));
     list[0] = num;
     res = 0;
     for (int i = 0; i < num; i++){
@@ -146,7 +146,7 @@ int* getIndexListofChar(String* s, char* c){
 String** splitString(String* s, int i){
     String* s1 = initString();
     String* s2 = initString();
-    String** list = malloc(2*sizeof(String*));
+    String** list = (String**) malloc(2*sizeof(String*));
     
     addStringLen(s1, s, i);
     addStringwithOffset(s2, s, s->len-i, i);
@@ -158,7 +158,7 @@ String** splitString(String* s, int i){
 String** splitStringOffset(String* s, int i, int gap){
     String* s1 = initString();
     String* s2 = initString();
-    String** list = malloc(2*sizeof(String*));
+    String** list = (String**)malloc(2*sizeof(String*));
     
     addStringLen(s1, s, i);
     addStringwithOffset(s2, s, s->len-i, i+gap);
@@ -197,8 +197,10 @@ String* getreplaceChar(String* s, char* oldc, int lenold, char* charnew, int len
 
 //first parser: replace sqrt with &
 String* formatToMathInput(String* s){
-    char* sqrts = "sqrt";
-    char* sqrtsnew = "&";
+    char* sqrts;
+    char* sqrtsnew;
+    sqrts = (char*)"sqrt";
+    sqrtsnew = (char*)"&";
     int res = 0;
     //res = getIndexofCharSeq(s, sqrts,4);
     while (res != -1){
@@ -225,18 +227,21 @@ int* searchNearestIndexDown(int** list, int len, int index, int lenstring){
     int diverenz = lenstring;
     int listindex = -1;
     for (int i = 0; i < len; i++){
-        for (int j = 1; j < list[i][0]; j++){
+        for (int j = 1; j <= list[i][0]; j++){
             if (abs(list[i][j] - index) < diverenz &&
                 list[i][j] != index && list[i][j] < index){
-                    printf("a:%d ",  diverenz);
+                    //printf("a:%d ",  diverenz);
                     nearestIndex = list[i][j];
                     diverenz = abs(list[i][j] - index);
-                    printf("b: %d ", diverenz);
+                    //printf("b: %d ", diverenz);
                     listindex = i;
                 }
         }
     }
-    return (int[]){nearestIndex, listindex};
+    int* res = (int*)malloc(sizeof(int)*2);
+    res[0] = nearestIndex;
+    res[1] = listindex;
+    return res;
     //ist int* und int[] in c und cpp das gleiche?
     
 }
@@ -246,7 +251,7 @@ int* searchNearestIndexDown(int** list, int len, int index, int lenstring){
 void printList(int* list){
     //fisrt element len of list
     printf("list: ");
-    for (int i = 1; i < list[0]; i++){
+    for (int i = 0; i <= list[0]; i++){
         printf("%d ", list[i]);
     }
 }
@@ -263,22 +268,25 @@ String* applyControl(String* s){
     
     int* list[] = {popp, popm, lopm, lopd, powopp, powops, cono, conc};
     int len = 8;
-    printList(lopm);
-    int* r = searchNearestIndexDown(list, len, 17, s->len); 
-    printf("%d ",r[0]);
-    printf("%d ", r[1]);
+    //returns a list with two elements, the first one
+    //has the index of the operator and the second one
+    //from the list
+    int* r = searchNearestIndexDown(list, len, 18, s->len); 
+    //printf("%d ",r[0]);
+    //printf("%d ", r[1]);
+
     return s;
 }
 
 int main() {
-    mul = "*";
-    div_ = "/";
-    add = "+";
-    sub = "-";
-    pow_ = "^";
-    root = "^";
-    endc = ")";
-    startc = "(";
+    mul = (char*) "*";
+    div_ = (char*)"/";
+    add = (char*)"+";
+    sub = (char*)"-";
+    pow_ = (char*)"^";
+    root = (char*)"^";
+    endc = (char*)")";
+    startc = (char*)"(";
 
     String* s = initString();
     char* testc = "+222+35kalsdl*2ladjk";

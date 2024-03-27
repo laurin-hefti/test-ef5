@@ -1,0 +1,150 @@
+//now doeing structur work not locic work
+
+#define OPERATOR 0
+#define NUMBER 1
+#define VAR 2
+#define STRUCT 3
+#define OBJ 4 //1 and 2
+#define BRAKOBJ 5 // (aldj)
+
+struct predef{
+	char* pattern;
+	char* res;
+	int back; //0 no back, 1 with back
+	char* (*proc_pointer) (char*);
+	int priority;
+};
+
+predef* newPredef(char* pat, char* res, int back, char* (*f_p)(char*), int prio){
+	predef* p = malloc(sizeof(predef));
+	p->pattern = pat;
+	p->res = res;
+	p->back = back;
+	p->proc_pointer = f_p;
+	p->priority = prio;
+	return p;
+}
+
+//predef math structur
+//inputoperation -> result; function how to process: priority
+//idea: oerdering priority with different optimiser ideas
+
+predef* exec_stand_op = newPredef("31013",(char*) "1", 0, null, 0 );
+//char* exec_stand_op = "31013 -> 1; std";
+
+//(n+n) = 2*n
+predef* std_var_plus = newPredef("32+23", (char*)"", 0, null, 0);
+
+//(n*n) = n^2
+predef* std_var_mult = newPredef("32*23", (char*)"", 0, null, 0);
+
+//(n-n) = 0
+predef* std_var_sub = newPredef("32-23", (char*)"", 0, null, 0);
+
+// (n/n) = 1 
+predef* std_var_div = newPredef("32/23", (char*)"", 0, null, 0);
+
+//2^3 * 2^4 = 2^3 * 4^3 = 8^3
+
+					//2*(a+b) <-> (2*a)+(2*b)
+//char* s_poly_mult = "34*340433 <-> 34*43034*43; spolm";
+predef* s_poly_mult = newPredef("4*34043", null, 1, null,  1);
+					//(a*b)+(a*b) example
+//char* poly_mult = "34043*34043";
+ 
+struct Number{
+	double d;
+};
+
+Number* newNumber(char* c){
+	Number* n = malloc(Sizeof(Number));
+	n->d = (double) c;
+	return n;
+
+}
+
+char* standOp(char* c){	
+	//translate char to numbers and so
+	double n1;
+	char op;
+	double n2;
+	
+	if (op == "+"){
+		return (char*) (n1 + n2);
+	} else if (op == "-"){
+			return (char*) (n1 - n2);
+		}
+	} else if (op == "*"){
+		return (char*) (n1 * n2);
+	} else (op == "/"){
+		return (char*) (n2 / n2);
+	}
+}
+
+// return noch nicht ganz korrekt a b
+char* stand_var_add(char*){
+	char a;
+	char b;
+	
+	if (a == b){
+		return "(a*2)";
+	} eles{
+		return "(a+b)";
+	}
+}
+
+char* stand_var_sub(char*){
+	char a;
+	char b;
+	
+	if(a == b){
+		return (char*) "0";
+	} else{
+		return "(a+b)";
+	}
+}
+
+char* stand_var_mult(char*){
+	char a;
+	char b;
+	
+	if(a == b){
+		return "(a^(2))";
+	}else{
+		return "(a*b)";
+	}
+}
+
+char* stand_var_div(char*){
+	char a;
+	cahr b;
+	
+	if (a == b){
+		return (char*) "1";
+	} else{
+		return "(a/b)";
+	}
+}
+
+struct MathElement{
+	char* c; //default
+	int type; 
+};
+
+Mathelement* newMathElement(char c, int type){
+	MathElement* e = malloc(sizeof(MathElement));
+	e->c = (char*) c; //cast char to cahr*
+	e->type = type;
+	return e;
+}
+
+char mathElementtoChar(MathElement* e){
+	return (char) e->type;
+}
+
+
+int main(){
+	
+
+	return 0;
+}

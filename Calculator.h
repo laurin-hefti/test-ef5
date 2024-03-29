@@ -306,36 +306,53 @@ String* applyControl(String* s){
          int* upChar = searchNearestIndexUp(list, len2, list[i][j], s->len);
          
          if (downChar[0] == 0){
+             //wenn keine operator sich unten befindet, dann setzte am anfang einen 
              s = getinsertChar(s,startc,1,0);
          }else if (downChar[1] == 5){
              //for case when )<- happend then search corresponding ( or go to end
              int hav_end = 0;
              int end = 0;
+             int counter = 0; //must need wenn other braket is open
              for (int k = 1; k <= list[6][0]; k++){
                  //must be list 6
-                 if (list[6][k] < downChar[0]){
+                 /*
+                 if (s->s[list[6][k]] == "("){
+                     counter += 1;
+                 }
+                 if (s->s[list[6][k]] == ")"){
+                     counter -= 1;
+                 }
+                 */
+                 
+                 if (list[6][k] < downChar[0] && counter == 0){
                      hav_end = 1;
                      end = list[6][k];
                      break;
                      
                  }
+             }
             if (hav_end){
-             s = getinsertChar(s, startc, 1, end-1);//my plus one
+                //wenn wer ein ) gefunden hat einzsetzten
+             s = getinsertChar(s, startc, 1, end+1);
+             //myplus one
+             //printf("test");
             }else{
-                s = getinsertChar(s, startc, 1, 0);
-                 }
+                //keine ahnung
+                //s = getinsertChar(s, startc, 1, 0);
              }
             //jump to other end of list
          } else if (downChar[1] == 6){
-             s = getinsertChar(s, startc,1, *downChar); //my not realy useful
+             //wenn anfang control ( dann neues seutzen
+             //s = getinsertChar(s, startc,1, *downChar); //my not realy useful
          }else{
-            s = getinsertChar(s, startc, 1, *downChar+1);
+            s = getinsertChar(s, startc, 1, downChar[0]+1);
          }
-         
+         //printf("%d", downChar[1]);
          if(upChar[0] == 0){
+             //fall wenn kein kontroloperator sich oben befindet dann setze oben einen hin
             addChar(s, endc, 1);
          }else if (upChar[1] == 5){
-             s = getinsertChar(s, endc, 1, *upChar+1);
+             //s = getinsertChar(s, endc, 1, *upChar+1);
          }else if (upChar[1] == 6){
              int have_end = 0;
              int end = 0;
@@ -347,12 +364,12 @@ String* applyControl(String* s){
                  }
              }
              if (have_end){
-                 s = getinsertChar(s, endc, 1, end+1);
+                 //s = getinsertChar(s, endc, 1, end+1);
              }else{
-                 addChar(s, endc, 1);
+                 //addChar(s, endc, 1);
              }
          }else {
-            s = getinsertChar(s, endc, 1, *upChar+2);
+            s = getinsertChar(s, endc, 1, upChar[0]+1);
          }
         }
     }
@@ -371,7 +388,7 @@ int main() {
     startc = (char*)"(";
 
     String* s = initString();
-    char* testc = "22b+dab*5b5+2";
+    char* testc = "22b+dab*5b665+2*55";
     addChar(s, testc, lenChar(testc));
     s = applyControl(s);
     printString(s);

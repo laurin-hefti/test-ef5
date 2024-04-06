@@ -1,6 +1,9 @@
 import math
-import graphics
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib as transforms
 from PIL import Image
+import cv2
 
 class Vec :
     def __init__(self, pos):
@@ -160,13 +163,13 @@ class Sphere :
         m_l : Line = Line(p,m_vec)
         return m_l
     
-    def get_m_i(self, line : Line, obj : list):
+    def get_m_i(self, line : Line, obj : list): #get mirror interactions
         data : list = self.interact(line)
 
         if data[0] == 0:
-            return [data]
+            return [data]                       #if no interaction with obj then return
         
-        data.remove(data[-1])
+        data.remove(data[-1])                   
         m_d = abs(data[0])
         if len(data) == 2:
             if abs(data[1]) < m_d:
@@ -178,7 +181,7 @@ class Sphere :
         for i in obj:
             interactions.append(i.interact(m_l))
         
-        data.append(self)
+        #data.append(self)
         interactions.insert(0, data)
         #print("data " + str(interactions))
 
@@ -253,7 +256,7 @@ class Scene :
     def __init__(self):
         self.len_x = 200
         self.len_y = 200
-        self.win = graphics.GraphWin("raytracing",self.len_x, self.len_y)
+        #self.win = graphics.GraphWin("raytracing",self.len_x, self.len_y)
         self.camera = Camera(0,0,0,0,1,0)
         self.obj = []
         self.ligth_obj = []
@@ -310,18 +313,19 @@ class Scene :
         return con
         
     
-    def interact_ligth(self, line : Line, data : list) -> bool:
+    def interact_ligth(self, line : Line, data : list) -> list:
         if data[0] == False:
-            return False
+            return [True, 10]
 
         interact_pos : Vec = Vec(line.getValue(data[0]))
         ray : Line; 
 
         interact : int = 0
-        ligth_s : int = 0;
+        ligth_s : list = []
 
         for i in range(len(self.ligth_obj)):
             ray = Line(interact_pos, Vec(self.ligth_obj[i].pos.subV(interact_pos)))
+            dist_i_to_light : float = ray.g.getLen()
             ray.g.norm()
             nextpos : Vec = Vec(ray.getValue(-0.1))
             ray.v = nextpos
@@ -332,26 +336,40 @@ class Scene :
                 if len(inter) == 2: 
                     if inter[0] != 0 and inter[0] > 0:
                         interact += 1
+                    else:
+                        ligth_s.append(dist_i_to_light)
                 elif len(inter) > 2:
                     if inter[0] > 0 and inter[1] > 0:
                         interact += 1
+                    else:
+                        ligth_s.append(dist_i_to_light)
+                        #print("interact light")
                 else:
-                    ligth_s += 1
-    
-        if interact >= len(self.ligth_obj):
-            return True
+                    #ligth_s.append(dist_i_to_light)
+                    pass
+
+        #print(ligth_s)
+
+        if interact >= len(self.ligth_obj): #attention not correct, object can be behinde and it alsow counts
+                                            #correct wenn should be a shadow and always append dist to ligth source to list
+            #return [True, dist_i_to_light]
+            return [True, min(ligth_s)]
         else:
-            return False
+            #ligth_s.append(dist_i_to_light)
+            return ligth_s
 
 
     def render_scene(self):
         img = Image.open("C:/Users/l.hefti/Desktop/test-ef5/sky.jpg", "r")
         img_size = img.size
         pix =  img.load()
+
+        pixel_valus = []
         
         for i in range(self.len_x):
             i /= self.len_x
             i -= 0.5
+            p_values = []
             for j in range(self.len_y):
                 j /= self.len_y
                 j -= 0.5
@@ -361,7 +379,7 @@ class Scene :
                 #ray : Line = Line(Vec([i,2,j]),Vec(Vec([i,2,j]).subV(self.camera.pos)))
                 #ray : Line = Line(Vec([i,0,j]),Vec([0,1,0]))
                 
-                ray : Line = Line(self.camera.pos,Vec(Vec([i,0.5,j]).subV(self.camera.pos)))
+                ray : Line = Line(self.camera.pos,Vec(Vec([i,1,j]).subV(self.camera.pos)))
                 ray.g.norm()
 
 
@@ -371,33 +389,61 @@ class Scene :
                 con = self.is_interacting(res)
                 #print(con)
 
-                #(self.interact_mirror_obj(ray))
+                interact2 = self.interact_mirror_obj(ray)
+                interactc = [0,0,0]
+                if interact2 != [[False],[False]]:
+                    if interact2[0] != [False]:
+                        interact2 = interact2[0]
+                    else:
+                        interact2 = interact2[1]
 
-                ligth : bool= self.interact_ligth(ray, con)
+                    interactc = interact2[1].color
+
+
+                ligth : list = self.interact_ligth(ray, con)
 
 
                 b : float = 1
-                if ligth:
-                    b = 0.5
+
+                if ligth[0] == True:
+                    b = 5 / ligth[1]
+                else:
+                    if False:
+                        b = 10/min(ligth)
+                        if b >= 1:
+                            b = 1
+                    b = 1
 
                 if con[0]:
-                    self.win.plot((i+(0.5))*(self.len_x),(j+(0.5))*(self.len_y), graphics.color_rgb(int(con[1].color[0]*b/con[0]),int(con[1].color[1]*b/con[0]),int(con[1].color[2]*b/con[0])))
+                    #self.win.plot((i+(0.5))*(self.len_x),(j+(0.5))*(self.len_y), graphics.color_rgb(int(con[1].color[0]*b),int(con[1].color[1]*b),int(con[1].color[2]*b)))
+                    p_values.append([int(con[1].color[0]*b + interactc[0]/2),int(con[1].color[1]*b+interactc[1]/2),int(con[1].color[2]*b+interactc[2]/2)])
                 
-                if con[0] == 0 and False:
+                if con[0] == 0:
+                    p_values.append([200,200,200])
+
                     #shit code for displacing the image
-                    nV : Vec = Vec([1,0,0])
-                    r : float = (ray.g.dotP(nV) - 1)
-                    r = abs(r)/2
-                    if ray.g.x() <= 0:
-                        r = -r
+                    if False:
+                        nV : Vec = Vec([1,0,0])
+                        r : float = (ray.g.dotP(nV) - 1)
+                        r = abs(r)/2
+                        if ray.g.x() <= 0:
+                            r = -r
 
-                    nV_z = Vec([0,0,1])
-                    r2 : float = (ray.g.dotP(nV_z)-1)
-                    r2 = abs(r2)/2
-                    
-                    col = pix[(img_size[0]//2)+ img_size[0] * r/2, img_size[1] - img_size[1]*r2/2]
-                    self.win.plot((i+(0.5))*(self.len_x),(j+(0.5))*(self.len_y), graphics.color_rgb(int(col[0]), int(col[1]), int(col[2])))
+                        nV_z = Vec([0,0,1])
+                        r2 : float = (ray.g.dotP(nV_z)-1)
+                        r2 = abs(r2)/2
+                        
+                        col = pix[(img_size[0]//2)+ img_size[0] * r/2, img_size[1] - img_size[1]*r2/2]
+                        self.win.plot((i+(0.5))*(self.len_x),(j+(0.5))*(self.len_y), graphics.color_rgb(int(col[0]), int(col[1]), int(col[2])))
 
+            pixel_valus.append(p_values)
+        #print(pixel_valus)
+        pixel_valus = np.array(pixel_valus)
+        pixel_valus = np.rot90(pixel_valus)
+        pixel_valus = np.rot90(pixel_valus)
+        pixel_valus = np.rot90(pixel_valus)
+        plt.imshow(pixel_valus)
+        plt.show()
         print("finish")
 
 
@@ -408,13 +454,13 @@ s.add_obj(Plane(Vec([0,0,-1]), Vec([1,0,-1]), Vec([0,1,-1])))
 s.add_ligth_obj(Ligth([0,20,-8]))
 s.render_scene()
 
-s.win.getMouse()
-s.win.close()
+#s.win.getMouse()
+#s.win.close()
 
 
-k = Sphere(Vec([0,0,0]),2)
-v = Line(Vec([-3,-3,0]),Vec([1,1,0]))
-print(k.interact(v))
+#k = Sphere(Vec([0,0,0]),2)
+#v = Line(Vec([-3,-3,0]),Vec([1,1,0]))
+#print(k.interact(v))
 
 
         

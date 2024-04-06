@@ -1,0 +1,6 @@
+badssl.com
+
+certificate decoder
+not evaluater
+
+dexode the certificate from base64 if at the end the end is a = sing

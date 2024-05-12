@@ -1,0 +1,144 @@
+def to_number(s):
+    if "*" in s or "/" in s or "+" in s or "-" in s or "**" in s or "root" in s: 
+        return s
+    else:
+        return Number(float(s))
+
+def to_brackets(s):
+    if s[len(s)-1] == ")":
+        return [s[:len(s)-1],Braket(")")]
+    elif s[0] == "(":
+        return [Braket("("), s[1:]]
+    else:
+        return [s]
+        
+class Operator : 
+    def __init__(self, sing, p, f):
+        self.sing = sing
+        self.p = p
+        self.func = f
+        
+    def get_comp(self, s):
+        l = s.split(self.sing)
+        if l == [s]:
+            return s
+        l2 = [l[0],l[1]]
+        con_s = ""
+        if len(l) > 2:
+            l2[0] = l[0]
+            l.remove(l[0])
+            for k in l:
+                con_s += k + self.sing
+            con_s = con_s[:len(con_s)-1]
+            l2[1] = con_s
+        l3 = to_brackets(l2[0])
+        l32 = to_brackets(l2[1])
+        if len(l3) == 1 and len(l32) == 1:
+            return [to_number(l2[0]), self, to_number(l2[1])]
+            
+        #braktest implemetation
+        elif len(l3) == 1:
+            pass
+        
+    def exe(self, num1, num2):
+        num = self.func(num1.n, num2.n)
+
+        return Number(num)
+        
+    def __repr__(self) -> str:
+        return f"Op({self.sing}, {self.p})"
+        
+class Number:
+    def __init__(self, n):
+        self.n = n
+        
+    def __repr__(self) -> str:
+        return f"Num({self.n})"
+        
+class Braket:
+    def __init__(self, b):
+        self.b = b
+        
+    def __repr__(self) ->str:
+        return f"Brak {self.b}"
+
+mult_o = Operator("*", 1, lambda a,b: a*b)
+div_o = Operator("/", 1, lambda a,b: a/b)
+add_o = Operator("+", 2, lambda a,b: a+b)
+sub_o = Operator("-",2, lambda a,b: a-b)
+pow_o = Operator("**", 0, lambda a,b: a**b)
+root_o = Operator("root", 0, lambda a,b: b**(1/a))
+
+#may musst be in this order
+op = [pow_o, root_o,mult_o, div_o, add_o, sub_o]
+
+def isString(l):
+    for i in l:
+        if type(i) == str:
+            return True
+    return False
+    
+def parse(inst_list):
+    p = 0
+    not_change = 0
+    
+    while isString(inst_list):
+        #print(inst_list)
+        len_list = len(inst_list)
+        
+        for element_i in range(len(inst_list)):
+            for o in op:
+                if type(inst_list[element_i]) == str and o.p == p:
+                    s = inst_list[element_i]
+                    inst_list.pop(element_i)
+                    
+                    new_inst = o.get_comp(s)
+                    if type(new_inst) == str:
+                        inst_list.insert(element_i, new_inst)
+                    else:
+                        for k in new_inst:
+                            inst_list.insert(element_i, k)
+                            
+        if len_list == len(inst_list):
+            not_change += 1
+        if not_change == 2:
+            p += 1
+            not_change = 0
+    
+    inst_list.reverse()
+    return inst_list
+            
+def execute(inst_list):
+    
+    p = 0
+    count = 0
+    
+    while len(inst_list) > 1:
+        
+        old_len = len(inst_list)
+        
+        for i in range(len(inst_list)):
+            if type(inst_list[i]) == Operator:
+                if inst_list[i].p == p:
+                    res = inst_list[i].exe(inst_list[i-1], inst_list[i+1])
+                    inst_list.pop(i+1)
+                    inst_list.pop(i)
+                    inst_list.pop(i-1)
+                    inst_list.insert(i-1,res)
+                    break
+                
+        if old_len == len(inst_list):
+            count += 1
+        if count == 2:
+            p += 1
+            count = 0
+    
+    return inst_list
+    
+
+input_s = "2root2*4"
+"sqrt(2**4)"
+inst_list = [input_s]
+inst_list = parse(inst_list)
+print(inst_list)
+print(execute(inst_list))

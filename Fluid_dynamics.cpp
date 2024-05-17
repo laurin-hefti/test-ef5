@@ -16,11 +16,9 @@ public:
   
   double radius = 10;
   
-  double getD(int x, int y){
-      return sqrt((this->x-x)*(this->x-x) + (this->y-y)*(this->y-y));
+  double getD(int xx, int yy){
+      return sqrt(pow(this->x-xx, 2) + pow(this->y-yy, 2));
   }
-  
-public:
  
   Cell(int x, int y, int start_p){
       this->x = x;
@@ -33,6 +31,7 @@ public:
        
         for (int i = 0; i < len; i++){
             double d = getD(store[i].x, store[i].y); 
+            std::cout << d << " ";
             if (d < radius && i != self_i)
             {
                 if (store[i].preasure < this->preasure){
@@ -44,10 +43,13 @@ public:
                 int d_y = store[i].y - this->y;
                 double dif = abs(this->preasure-store[i].preasure);
                 
+                //std::cout << store[i].preasure << " ";
+                
                 f[0] += d_x * 1/(d*d) * dif;
                 f[1] += d_y * 1/(d*d) * dif;
             }
         }
+        std::cout << " end" <<std::endl;
         TwoNum dir = {f[0], f[1]};
         this->dx = dir;
   }
@@ -64,9 +66,11 @@ public:
           }
       }
       
-      double dif = abs(this->preasure - store[nearest_cell].preasure)/2;
-      store[nearest_cell].preasure += dif;
-      this->preasure -= dif;
+      double dif = (this->preasure - store[nearest_cell].preasure)/2;
+      if (dif > 0){ //my not useful
+        store[nearest_cell].preasure += dif;
+        this->preasure -= dif;
+      }
   }
 };
 
@@ -140,8 +144,8 @@ int main() {
     F->printD();
     F->all_move();
     F->printDensity();
-    F->all_calc_d();
-    F->all_move();
-    F->printDensity();
+    //F->all_calc_d();
+    //F->all_move();
+    //F->printDensity();
     return 0;
 }

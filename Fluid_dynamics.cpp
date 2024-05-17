@@ -43,7 +43,7 @@ public:
                 int d_y = store[i].y - this->y;
                 double dif = abs(this->preasure-store[i].preasure);
                 
-                f[0] += d_x * 1/(d*d) * dif; //not dist
+                f[0] += d_x * 1/(d*d) * dif;
                 f[1] += d_y * 1/(d*d) * dif;
             }
         }
@@ -53,7 +53,7 @@ public:
   
   void apply_pres(Cell* store, int len){
       int nearest_cell = 0;
-      double dist_to_cell = getD(store[i].x, store[i].y);
+      double dist_to_cell = getD(store[0].x, store[0].y);
       
       for (int i = 0; i < len; i++){
           if (getD(this->dx.x, this->dx.y) < dist_to_cell){
@@ -62,7 +62,9 @@ public:
           }
       }
       
-      store[i].preasure += 
+      double dif = abs(this->preasure - store[nearest_cell].preasure);
+      store[nearest_cell].preasure += dif;
+      this->preasure -= dif;
   }
 };
 

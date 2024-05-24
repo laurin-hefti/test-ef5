@@ -17,10 +17,12 @@
 #endif
 
 //#undef for more
-
 #define connect(x,y) x##y
+#define comcon(x,y) connect(x,y)
+
 
 #define createList connect(createList,data_name)
+#define newObj comcon(new, comcon(,data_name))
 
 typedef struct data_name {
     data_type* list;
@@ -34,7 +36,7 @@ data_type* createList(int mult)
     return list_ptr;
 }
 
-data_name connect(new,data_name)()
+data_name newObj()
 {
     data_type* list = createList(20);
     data_name obj = {list,0,20};
@@ -42,6 +44,7 @@ data_name connect(new,data_name)()
 }
 
 int main(){
-    d64 o = newdata_name();
+    //connect(3, a);
+    d64 list = newd64();
     return 0;
 }

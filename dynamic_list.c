@@ -20,9 +20,8 @@
 #define connect(x,y) x##y
 #define comcon(x,y) connect(x,y)
 
-
 #define createList connect(createList,data_name)
-#define newObj comcon(new, comcon(,data_name))
+#define newObj comcon(new, comcon(,data_name)) // auch connect
 
 typedef struct data_name {
     data_type* list;

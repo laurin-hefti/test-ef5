@@ -1,5 +1,6 @@
 //dynamic template list
 
+#include <stdio.h>
 #include <stdlib.h>
 
 //external definition
@@ -22,6 +23,7 @@
 
 #define createList connect(createList,data_name)
 #define newObj comcon(new, comcon(,data_name)) // auch connect
+#define addObj comcon(add, comcon(,data_name))
 
 typedef struct data_name {
     data_type* list;
@@ -42,8 +44,17 @@ data_name newObj()
     return obj;
 }
 
+void addObj(data_name* obj, data_type d)
+{
+    obj->list[obj->len] = d;
+    obj->len += 1;
+    //def if it is pointer
+}
+
 int main(){
-    //connect(3, a);
     d64 list = newd64();
+    addd64(&list, 4);
+    addd64(&list, 6);
+    printf("%d", list.list[1]);
     return 0;
 }

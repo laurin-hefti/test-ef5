@@ -1,3 +1,8 @@
+struct cord {
+    x: f64,
+    y: f64,
+}
+
 struct Pendel {
     length: f64,
     angle: f64,
@@ -40,16 +45,51 @@ impl dPendel {
                             - (self.p1.vel * self.p1.vel) * (self.p1.angle - self.p2.angle).sin())
                         - (g / self.p2.length * self.p2.angle.sin());
                         
+                        
     }
     
-    impl step(&mut self) {
+    fn step(&mut self) {
+        self.calc_acc();
         
+        self.p1.angle += self.p1.vel * dt;
+        self.p2.angle += self.p2.vel * dt;
+        
+        self.p1.vel += self.p1.acc * dt;
+        self.p2.vel += self.p2.acc * dt;
+    }
+    
+    fn printSystem(&self) {
+        println!("angle 1: {} angle 2: {}", self.p1.angle, self.p2.angle);
+    }
+    
+    fn convto2d_p1(&self) -> cord {
+        return cord {x: self.p1.angle.sin() * self.p1.length, y: self.p1.angle.cos() * self.p1.length} 
+    }
+    
+    fn convtod2_p2(&self) -> cord {
+        let cord_p1: cord = self.convto2d_p1();
+        
+        let mut cord_p2: cord = cord {x: self.p2.angle.sin() * self.p2.length, y: self.p2.angle.cos() * self.p2.length};
+        
+        cord_p2.x += cord_p1.x;
+        cord_p2.y += cord_p1.y;
+        
+        return cord_p2;
     }
 }
 
 const g: f64 = 9.8;
-const dt: f64 = 0e-5;
+const dt: f64 = 0.01;
 
 fn main() {
+    let p_len: f64 = 1.0;
+    let p_mass: f64 = 1.0;
     
+    
+    let mut pendel: dPendel = dPendel::new(p_len, 0.1, p_len, 0.1, p_mass, p_mass);
+    
+    for i in 0..1000 {
+        pendel.step();
+        pendel.printSystem();
+    }
 }
